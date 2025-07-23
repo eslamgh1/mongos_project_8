@@ -261,4 +261,48 @@ export const getNoteById = async (req, res) => {
 //! 10. Using aggregation, retrieves all notes for the logged-in user with user info
 
 //& 11. Delete all notes for the logged-in user. (Get the id for the logged-in user (userId) from the token not the body)
+export const deleteAllNote = async (req, res) => {
+  try {
+    const { authorization } = req.headers; // user ID
+    // // console.log({ headers: req.headers, authorization });
+
+    const { noteId } = req.params; //note ID
+
+    // // findOne => Find user by Id in userModel
+    const findNote = await noteModel.findById(noteId);
+    if (!findNote) {
+      return res.status(400).json({ message: "Note not found" });
+    }
+    console.log(findNote.userId);
+
+    const decoded = jwt.verify(authorization, "key_2011");
+    console.log(decoded.id);
+
+    if (decoded.id != findNote.userId) {
+      return res.status(400).json({ message: "You are not the owner" });
+    }
+
+    // // 1-deleteOne => to check and return deletedCount
+    // const deleteOneResult = await noteModel.deleteOne({ _id: noteId });
+    // //check if existed
+    // if (!deleteOneResult.deletedCount) {
+    //   return res.status(401).json({ message: "note not found" });
+    // }
+
+    // 2-findByIdAndDelete => return object has been deleted
+    const deleteOneResult = await noteModel.findByIdAndDelete(noteId);
+    //check if existed
+    if (!deleteOneResult) {
+      return res.status(401).json({ message: "note not found" });
+    }
+
+    return res
+      .status(201)
+      .json({ message: "Note is deleted", deleteOneResult });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error", erro: error.message });
+  }
+};
 

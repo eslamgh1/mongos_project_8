@@ -12,6 +12,7 @@ noteRouter.delete("/delete/:noteId",noteService.deleteNote)
 noteRouter.get("/paginate-sort",noteService.paginatedNotes)
 noteRouter.get("/:id",noteService.getNoteById)
 // noteRouter.get("/getnotes",noteService.getNotesUsers)
+noteRouter.delete("/",noteService.getNoteById)
 
 
 export default noteRouter;
